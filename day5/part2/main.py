@@ -11,45 +11,68 @@ class Range:
         else:
             return False
 
+    def __lt__(self, other):
+        return self.start < other.start
+
     def __repr__(self):
         return f"{self.start}-{self.end}"
+
+    def nbr(self):
+        return self.end - self.start + 1
 
 
 class Stock:
 
     def __init__(self):
-        self.stock = []
+        self.ranges = []
         self.size = 0
 
     def add_range(self, r):
-        self.adapt_array_size(r.end)
-        for i in range(r.start, r.end + 1):
-            self.stock[i] = 1
-    
-    def adapt_array_size(self, end):
-        if end >= self.size:
-            size_to_add = end - self.size + 1
-            #print("end", end, "size", self.size, "size_to_add", size_to_add)
-            self.stock += [0] * size_to_add
-            self.size += size_to_add
+        self.ranges.append(r)
+
+    def concat_ranges(self):
+        self.ranges = sorted(self.ranges)
+        i = 0
+
+        while i < len(self.ranges):
+            if (i + 1) < len(self.ranges):
+                _next = self.ranges[i + 1]
+                _current = self.ranges[i]
+
+                if _next.start <= _current.end:
+                    if _next.end >= _current.end:
+                        _current.end = _next.end
+                        del self.ranges[i + 1]
+                        i -= 1
+                    elif _next.end <= _current.end:
+                        del self.ranges[i + 1]
+                        i -= 1
+
+            i += 1
+
 
     def counter(self):
-        return self.stock.count(1)
+        counter = 0
+        for r in self.ranges:
+            counter += r.nbr()
+
+        return counter
 
 
-ranges = [] 
+lines = [] 
 
 with open("input2.txt", "r", encoding="utf-8") as f:
     for line_number, raw_line in enumerate(f, start=1):
         line = raw_line.rstrip("\n")
-        ranges.append(Range(line))
+        lines.append(Range(line))
 
 
 stock = Stock()
 
-for r in ranges:
+for r in lines:
     stock.add_range(r)
 
+stock.concat_ranges()
 
-#print(stock.stock)
+#print(stock.ranges)
 print(stock.counter())
