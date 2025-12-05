@@ -31,17 +31,24 @@ height = len(input_matrix)
 width = len(input_matrix[0])
 sum = 0
 
-for row in range(0, width):
-    for col in range(0, height):
-        if input_matrix[row][col] == '.':
-            continue
-        result = getneighbors8(input_matrix, row, col, width, height)
-        #print("row", row, "col", col, "result", result)
-        count_element = result.count('@')
-        if count_element <= max_adjacent:
-            #print("row", row, "col", col, "count", count_element)
-            result_matrix[row][col] = '.'
-            sum += 1
+while True:
+    tmp_sum = sum
+    for row in range(0, width):
+        for col in range(0, height):
+            if input_matrix[row][col] == '.':
+                continue
+
+            result = getneighbors8(input_matrix, row, col, width, height)
+            #print("row", row, "col", col, "result", result)
+            count_element = result.count('@')
+            if count_element <= max_adjacent:
+                #print("row", row, "col", col, "count", count_element)
+                result_matrix[row][col] = '.'
+                sum += 1
+
+    input_matrix = [row[:] for row in result_matrix]
+    if tmp_sum == sum:
+        break
 
 #print('\n'.join(['\t'.join([str(cell) for cell in row]) for row in result_matrix]))
 print("sum", sum)
